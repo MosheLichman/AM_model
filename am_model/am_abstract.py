@@ -30,6 +30,9 @@ class AMAbstract(object):
         self._eps = 1E-12
         self._ga_step = 0.1
 
+    def get_params(self):
+        return self._model_params
+
     def training(self, train_data, val_data, return_mix=False):
         """
         Learning the mixture weights (and the hyper parameters).
