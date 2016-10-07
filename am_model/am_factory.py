@@ -16,11 +16,11 @@ def get_model(args):
 
 
 def _indiv_ar_2(args):
-    return am_indiv.AMIndiv(args.r, args.c, 2, args.num_proc)
+    return am_indiv.AMIndiv(args.r, args.c, 2, args.p)
 
 
 def _global_ar_2(args):
-    return am_global.AMGlobal(args.r, args.c, 2, args.num_proc)
+    return am_global.AMGlobal(args.r, args.c, 2, args.p)
 
 
 def _load_smooth_mat(path, dim):
@@ -32,14 +32,14 @@ def _indiv_ar_4(args):
     user_smooth = _load_smooth_mat(args.row_smooth, args.r).tocsr()
     item_smooth = _load_smooth_mat(args.col_smooth, args.c).tocsr()
 
-    return am_indiv.AMIndiv(args.r, args.c, 4, args.num_proc, user_smooth, item_smooth)
+    return am_indiv.AMIndiv(args.r, args.c, 4, args.p, user_smooth, item_smooth)
 
 
 def _global_ar_4(args):
     user_smooth = _load_smooth_mat(args.row_smooth, args.r).tocsr()
     item_smooth = _load_smooth_mat(args.col_smooth, args.c).tocsr()
 
-    return am_global.AMGlobal(args.r, args.c, 4, args.num_proc, user_smooth, item_smooth)
+    return am_global.AMGlobal(args.r, args.c, 4, args.p, user_smooth, item_smooth)
 
 
 _factory = {'iar2': _indiv_ar_2, 'gar2': _global_ar_2, 'iar4': _indiv_ar_4, 'gar4': _global_ar_4}
