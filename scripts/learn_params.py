@@ -77,4 +77,7 @@ def main_func():
 
 
 if __name__ == '__main__':
+    """
+    %run scripts/learn_params.py -train /extra/mlichman0/all_data/redit_sample/train_data.pkl -val /extra/mlichman0/all_data/redit_sample/val_data.pkl -row_smooth /extra/mlichman0/all_data/redit_sample/user_smooth.pkl -col_smooth /extra/mlichman0/all_data/redit_sample/category_smooth.pkl -output /extra/mlichman0/all_data/redit_sample/ -p 10 -model gar2 -r 11100 -c 7782 -v
+    """
     main_func()
