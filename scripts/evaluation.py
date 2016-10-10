@@ -13,7 +13,7 @@ from am_model import am_factory
 
 
 def evaluate_am(model, train_data, test_data, params):
-    results = model.evaluation(train_data, test_data, params, objective='logP')
+    results = model.evaluation(train_data, test_data, params, objective='erank')
     return results
 
 
