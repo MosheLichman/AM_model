@@ -21,6 +21,7 @@ def main_func():
     parser = argparse.ArgumentParser()
     parser.add_argument('-train', type=str, help='Path to training matrix.')
     parser.add_argument('-test', type=str, help='Path to validation matrix.')
+    parser.add_argument('-params', type=str, help='Path to learned params')
     parser.add_argument('-row_smooth', type=str, help='Path to row smoothing matrix.')
     parser.add_argument('-col_smooth', type=str, help='Path to column smoothing matrix.')
 
@@ -51,7 +52,9 @@ def main_func():
     test_data = np.repeat(test_mat_raw[:, :-1], test_mat_raw[:, -1].astype(int), axis=0)
 
     model = am_factory.get_model(args)
-    results = evaluate_am(model, train_data, test_data)
+
+    params = fu.pkl_load(args.params)
+    results = evaluate_am(model, train_data, test_data, params)
 
     tm.print_summary()
     return results
