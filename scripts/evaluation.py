@@ -25,7 +25,7 @@ def main_func():
     parser.add_argument('-row_smooth', type=str, help='Path to row smoothing matrix.')
     parser.add_argument('-col_smooth', type=str, help='Path to column smoothing matrix.')
 
-    parser.add_argument('-p', type=int, help='Num processors', default=2)
+    parser.add_argument('-num_proc', type=int, help='Num processors', default=2)
 
     parser.add_argument('-model', type=str, help='Which models')
 

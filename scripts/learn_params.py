@@ -43,7 +43,7 @@ def main_func():
 
     parser.add_argument('-output', type=str, help='Output folder.')
 
-    parser.add_argument('-p', type=int, help='Num processors', default=2)
+    parser.add_argument('-num_proc', type=int, help='Num processors', default=2)
 
     parser.add_argument('-model', type=str, help='Which models')
 
