@@ -33,7 +33,7 @@ class AMAbstract(object):
     def get_params(self):
         return self._model_params
 
-    def training(self, train_data, val_data, return_mix=False):
+    def training(self, train_data, val_data):
         """
         Learning the mixture weights (and the hyper parameters).
 
@@ -61,8 +61,23 @@ class AMAbstract(object):
 
         self._prev_mix_counts += self._curr_mix_counts
 
-        if return_mix:
-            return self._model_params['mix'].copy()
+        return self._model_params
+
+    def evaluation(self, train_data, test_data, params=None, objective='logP'):
+        if params is None:
+            params = self._model_params
+
+        g_mpe, mle, f_mle, l_mle = self._learn_components(train_data, np.unique(test_data[:, 0]))
+        results = []
+
+        uids = np.unique(test_data[:, 0]).astype(int)
+        batch_size = int(np.ceil(uids.shape[0] / self._num_proc))
+
+        helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
+                            (objective, g_mpe, mle, f_mle, l_mle, test_data, params['lambda'], params['eta'],
+                             params['sum_b']), results.extend)
+
+        return results
 
     def _get_mix_counts_for_user(self, uid):
         return self._prev_mix_counts[uid, :], self._curr_mix_counts[uid, :]
@@ -116,6 +131,8 @@ class AMAbstract(object):
         new_eta = self._model_params['eta'] * np.exp(self._ga_step * grad)  # It's gradient ascent
         log.debug('Gradient ascent on sum_mg: %.3f -> %.3f' % (self._model_params['eta'], new_eta))
         self._model_params['eta'] = new_eta
+
+        self._model_params['lambda'] = self._learn_lambda()
         hyper_point.collect()
 
     def _learn_components(self, train_data, relevant_uids):
