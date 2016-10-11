@@ -72,7 +72,7 @@ def main_func():
     rows = np.max([np.max(train[:, 0]), np.max(val[:, 0]), np.max(test[:, 0])])
     cols = np.max([np.max(train[:, 1]), np.max(val[:, 1]), np.max(test[:, 1])])
 
-    fu.np_save(args.output, 'r=%d_c=%d' % (rows, cols), [])
+    fu.np_save(args.output, 'r=%d_c=%d.npy' % (rows, cols), [])
 
     # Fixing the similarity matrices:
     #   1. Making the sure the diagonal is 0.
