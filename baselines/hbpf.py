@@ -41,7 +41,6 @@ def _fix_projection(mat, items, dim):
 
 def main_func():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-train', type=str, help='Path to training matrix.')
     parser.add_argument('-test', type=str, help='Path to validation matrix.')
 
     parser.add_argument('-num_proc', type=int, help='Num processors', default=2)
@@ -70,7 +69,7 @@ def main_func():
     W = _fix_projection(theta, args.r, theta.shape[1] - 2)
 
     beta = fu.np_load_txt(args.beta, delimiter='\t')
-    H = _fix_projection(beta, args.c, beta.shape[1] - 2)
+    H = _fix_projection(beta, args.c, beta.shape[1] - 2).T
 
     results = mf_commons.evaluation(args.obj, test_data, W, H, args.num_proc)
 
