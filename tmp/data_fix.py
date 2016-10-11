@@ -37,6 +37,8 @@ def main_func():
     parser.add_argument('-test', type=str, help='Path to test file.')
     parser.add_argument('-train', type=str, help='Path to train file.')
     parser.add_argument('-output', type=str, help='Output folder.')
+    parser.add_argument('-row_sim', type=str, help='Output folder.')
+    parser.add_argument('-col_sim', type=str, help='Output folder.')
 
     args = parser.parse_args()
 
