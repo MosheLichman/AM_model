@@ -48,10 +48,11 @@ def main_func():
 
     for u in np.unique(full_test[:, 0]):
         u_data = full_test[np.where(full_test[:, 0] == u)[0], :]
+        n = u_data.shape[0]
+
         # Shuffling the data
         perm = np.random.permutation(n)
         u_data = u_data[perm]
-        n = u_data.shape[0]
 
         # Half test half validation
         nv = np.ceil(n / 2)
