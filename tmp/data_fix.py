@@ -55,7 +55,7 @@ def main_func():
         u_data = u_data[perm]
 
         # Half test half validation
-        nv = np.ceil(n / 2)
+        nv = np.ceil(n / 2).astype(int)
         val = np.vstack([val, u_data[:nv, :]])
         test = np.vstack([test, u_data[nv:, :]])
 
