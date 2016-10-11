@@ -32,7 +32,7 @@ def _fix_projection(mat, items, dim):
         1. fixed:   <(items, dim) ndarray>           fixed projection matrix
     """
     fixed = np.zeros([items, dim])
-    my_ids = mat[:, 1] - 1
+    my_ids = mat[:, 1].astype(int) - 1
     values = mat[:, 2:]
     for i in range(mat.shape[0]):
         fixed[my_ids[i]] = values[i]
