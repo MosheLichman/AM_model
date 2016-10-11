@@ -9,6 +9,7 @@ from commons import objectives
 from commons import helpers
 from commons import log_utils as log
 
+
 def evaluation(objective, test_data, W, H, num_proc):
     """
     Performs an evaluation of the test data using the learned parameters (object properties).
@@ -52,6 +53,8 @@ def mp_user_test(queue, uids, args):
         u_mf = np.dot(W[uid], H)
         user_mult = u_mf        # Other places I'll have to normalize
         if objective is 'logP':
+            if np.any(user_mult == 0):
+                log.info('mf_commons.mp_user_test: User %d with 0 probability' % uid)
             user_mult /= np.sum(user_mult)
 
         results.append([uid, objectives.obj_func[objective](user_mult, u_test)])
