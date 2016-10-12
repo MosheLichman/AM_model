@@ -34,6 +34,7 @@ def fix_sim_mat(sim_mat, dim):
 
 def main_func():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-val', type=str, default=None)
     parser.add_argument('-test', type=str, help='Path to test file.')
     parser.add_argument('-train', type=str, help='Path to train file.')
     parser.add_argument('-output', type=str, help='Output folder.')
@@ -42,11 +43,12 @@ def main_func():
 
     args = parser.parse_args()
 
-    # Step 1: Splitting test into validation and test
-    full_test_raw = fu.pkl_load(args.test)
-    full_test = np.repeat(full_test_raw[:, :-1], full_test_raw[:, -1].astype(int), axis=0)
-    val = np.zeros([0, 2])
-    test = np.zeros([0, 2])
+    if args.val is not None:
+        # Step 1: Splitting test into validation and test
+        full_test_raw = fu.pkl_load(args.test)
+        full_test = np.repeat(full_test_raw[:, :-1], full_test_raw[:, -1].astype(int), axis=0)
+        val = np.zeros([0, 2])
+        test = np.zeros([0, 2])
 
     for u in np.unique(full_test[:, 0]):
         u_data = full_test[np.where(full_test[:, 0] == u)[0], :]
@@ -61,11 +63,16 @@ def main_func():
         val = np.vstack([val, u_data[:nv, :]])
         test = np.vstack([test, u_data[nv:, :]])
 
-    # Transforming into coo and saving the files
-    val = helpers.unique_two_cols(val[:, 0], val[:, 1])
-    fu.pkl_dump(args.output, 'validation.pkl', val)
+        # Transforming into coo
+        val = helpers.unique_two_cols(val[:, 0], val[:, 1])
+        test = helpers.unique_two_cols(test[:, 0], test[:, 1])
+    else:
+        # No reason to split, it's already splitted
+        test = fu.pkl_load(args.test)
+        val = fu.pkl_load(args.val)
 
-    test = helpers.unique_two_cols(test[:, 0], test[:, 1])
+    # Saving all the files in the new folder
+    fu.pkl_dump(args.output, 'validation.pkl', val)
     fu.pkl_dump(args.output, 'test.pkl', val)
 
     train = fu.pkl_load(args.train)
