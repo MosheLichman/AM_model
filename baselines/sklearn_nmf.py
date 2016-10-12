@@ -13,7 +13,6 @@ from baselines import mf_commons
 from commons import log_utils as log
 from commons import file_utils as fu
 from commons import time_measure as tm
-from commons import helpers
 
 from sklearn.decomposition import NMF
 
@@ -29,36 +28,10 @@ def factorize_mat(train_data, k):
     return W, H
 
 
-def evaluation(train_data, test_data, k, num_proc):
-    """
-    Performs an evaluation of the test data using the learned parameters (object properties).
-
-     INPUT:
-    -------
-        1. objective:       <string>            objective function to use for evaluation
-        2. train_data:      <(U, L) csr_mat>    user observation data - used to learn the components
-        3. test_data:       <(N, 2) ndarray>    each row is a test event [user_id, loc_id]
-
-     OUTPUT:
-    --------
-        1. scores:              <(U_te, 2) ndarray>     avg. score for each user in the test data.
-    """
-    log.info('Running model evaluation')
-    eval_point = tm.get_point('evaluation')
-    W, H = factorize_mat(train_data, k)
-
-    uids = np.unique(test_data[:, 0])
-    batch_size = int(np.ceil(uids.shape[0] / num_proc))
-    scores = []
-    helpers.quque_on_uids(num_proc, uids, batch_size, _mp_user_test, ('erank', test_data, W, H), scores.extend)
-    eval_point.collect()
-
-    return np.array(scores)
-
-
 def main_func():
     parser = argparse.ArgumentParser()
     parser.add_argument('-train', type=str, help='Path to training matrix.')
+    parser.add_argument('-val', type=str, help='Path to training matrix.')
     parser.add_argument('-test', type=str, help='Path to validation matrix.')
 
     parser.add_argument('-num_proc', type=int, help='Num processors', default=2)
@@ -77,6 +50,10 @@ def main_func():
 
     R, C = args.r, args.c
     obs_mat_raw = fu.pkl_load(args.train)
+    # Combining the validation. I can treat it as train now.
+    obs_mat_val_raw = fu.pkl_load(args.val)
+    obs_mat_raw = np.vstack([obs_mat_raw, obs_mat_val_raw])
+
     train_data = sparse.coo_matrix((obs_mat_raw[:, 2], (obs_mat_raw[:, 0], obs_mat_raw[:, 1])),
                                    shape=(R, C)).tolil()
 
