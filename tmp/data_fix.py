@@ -109,15 +109,17 @@ def main_func():
     missing_rows = np.where(np.in1d(np.arange(rows), np.unique(train[:, 0]), assume_unique=True, invert=True))[0]
     if len(missing_rows) > 0:
         log.info('Adding %d rows' % len(missing_rows))
-        sup_data = np.repeat(missing_rows.reshape([len(missing_rows), 1]), 2, axis=1)
-        sup_data = np.hstack([sup_data, np.zeros([len(missing_rows), 1])])
+        # sup_data = np.repeat(missing_rows.reshape([len(missing_rows), 1]), 2, axis=1)
+        sup_data = np.zeros([len(missing_rows), 3])
+        sup_data[:, 0] = missing_rows
         train = np.vstack([train, sup_data])
 
     missing_cols = np.where(np.in1d(np.arange(cols), np.unique(train[:, 1]), assume_unique=True, invert=True))[0]
     if len(missing_cols) > 0:
         log.info('Adding %d cols' % len(missing_cols))
-        sup_data = np.repeat(missing_cols.reshape([len(missing_cols), 1]), 2, axis=1)
-        sup_data = np.hstack([sup_data, np.zeros([len(missing_cols), 1])])
+        sup_data = np.zeros([len(missing_cols), 3])
+        sup_data[:, 1] = missing_cols
+
         train = np.vstack([train, sup_data])
 
     # now adding the +1 and saving
