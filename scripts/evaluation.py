@@ -20,6 +20,7 @@ def evaluate_am(model, train_data, test_data, params):
 def main_func():
     parser = argparse.ArgumentParser()
     parser.add_argument('-train', type=str, help='Path to training matrix.')
+    parser.add_argument('-val', type=str, help='Path to validation matrix.')
     parser.add_argument('-test', type=str, help='Path to validation matrix.')
     parser.add_argument('-params', type=str, help='Path to learned params')
     parser.add_argument('-row_smooth', type=str, help='Path to row smoothing matrix.')
@@ -43,6 +44,12 @@ def main_func():
 
     R, C = args.r, args.c
     obs_mat_raw = fu.pkl_load(args.train)
+
+    # Combining the validation. I can treat it as train now.
+    obs_mat_val_raw = fu.pkl_load(args.val)
+
+    obs_mat_raw = np.vstack([obs_mat_raw, obs_mat_val_raw])
+
     train_data = sparse.coo_matrix((obs_mat_raw[:, 2], (obs_mat_raw[:, 0], obs_mat_raw[:, 1])),
                                    shape=(R, C)).tolil()
 
