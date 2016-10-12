@@ -50,18 +50,18 @@ def main_func():
         val = np.zeros([0, 2])
         test = np.zeros([0, 2])
 
-    for u in np.unique(full_test[:, 0]):
-        u_data = full_test[np.where(full_test[:, 0] == u)[0], :]
-        n = u_data.shape[0]
+        for u in np.unique(full_test[:, 0]):
+            u_data = full_test[np.where(full_test[:, 0] == u)[0], :]
+            n = u_data.shape[0]
 
-        # Shuffling the data
-        perm = np.random.permutation(n)
-        u_data = u_data[perm]
+            # Shuffling the data
+            perm = np.random.permutation(n)
+            u_data = u_data[perm]
 
-        # Half test half validation
-        nv = np.ceil(n / 2).astype(int)
-        val = np.vstack([val, u_data[:nv, :]])
-        test = np.vstack([test, u_data[nv:, :]])
+            # Half test half validation
+            nv = np.ceil(n / 2).astype(int)
+            val = np.vstack([val, u_data[:nv, :]])
+            test = np.vstack([test, u_data[nv:, :]])
 
         # Transforming into coo
         val = helpers.unique_two_cols(val[:, 0], val[:, 1])
