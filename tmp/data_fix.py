@@ -43,7 +43,7 @@ def main_func():
 
     args = parser.parse_args()
 
-    if args.val is not None:
+    if args.val is None:
         # Step 1: Splitting test into validation and test
         full_test_raw = fu.pkl_load(args.test)
         full_test = np.repeat(full_test_raw[:, :-1], full_test_raw[:, -1].astype(int), axis=0)
