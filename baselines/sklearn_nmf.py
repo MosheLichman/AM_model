@@ -8,11 +8,13 @@ from scipy import sparse
 
 import argparse
 
+from baselines import mf_commons
+
 from commons import log_utils as log
 from commons import file_utils as fu
 from commons import time_measure as tm
 from commons import helpers
-from commons import objectives
+
 from sklearn.decomposition import NMF
 
 
@@ -45,35 +47,13 @@ def evaluation(train_data, test_data, k, num_proc):
     eval_point = tm.get_point('evaluation')
     W, H = factorize_mat(train_data, k)
 
-    obj_scores = []
-
     uids = np.unique(test_data[:, 0])
     batch_size = int(np.ceil(uids.shape[0] / num_proc))
     scores = []
     helpers.quque_on_uids(num_proc, uids, batch_size, _mp_user_test, ('erank', test_data, W, H), scores.extend)
-
-    obj_scores.append(np.array(scores))
-
     eval_point.collect()
-    return obj_scores
 
-
-def _mp_user_test(queue, uids, args):
-    objective, test_data, W, H = args
-
-    mf = np.dot(W, H)
-    results = []
-    for i in range(len(uids)):
-        user_eval_point = tm.get_point('user_eval')
-        uid = uids[i]
-        u_test = test_data[np.where(test_data[:, 0] == uid)[0], 1].astype(int)
-
-        user_mult = mf[uid]
-
-        results.append([uid, objectives.obj_func[objective](user_mult, u_test)])
-        user_eval_point.collect()
-
-    queue.put(results)
+    return np.array(scores)
 
 
 def main_func():
@@ -105,10 +85,13 @@ def main_func():
     test_mat_raw = fu.pkl_load(args.test)
     test_data = np.repeat(test_mat_raw[:, :-1], test_mat_raw[:, -1].astype(int), axis=0)
 
-    results = evaluation(train_data, test_data, args.k, args.num_proc)
+    W, H = factorize_mat(train_data, args.k)
+
+    # Can't call it with logP
+    results = mf_commons.evaluation('erank', test_data, W, H, args.num_proc)
 
     tm.print_summary()
-    return results
+    return np.array(results)
 
 
 if __name__ == '__main__':

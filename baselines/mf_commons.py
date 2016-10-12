@@ -27,18 +27,14 @@ def evaluation(objective, test_data, W, H, num_proc):
     log.info('Running model evaluation')
     eval_point = tm.get_point('evaluation')
 
-    obj_scores = []
-
     uids = np.unique(test_data[:, 0])
     batch_size = int(np.ceil(uids.shape[0] / num_proc))
     scores = []
     helpers.quque_on_uids(num_proc, uids, batch_size, mp_user_test,
                           (objective, test_data, W, H), scores.extend)
 
-    obj_scores.append(np.array(scores))
-
     eval_point.collect()
-    return obj_scores
+    return np.array(scores)
 
 
 def mp_user_test(queue, uids, args):
@@ -55,6 +51,7 @@ def mp_user_test(queue, uids, args):
         if objective is 'logP':
             if np.any(user_mult == 0):
                 log.info('mf_commons.mp_user_test: User %d with 0 probability' % uid)
+
             user_mult /= np.sum(user_mult)
 
         results.append([uid, objectives.obj_func[objective](user_mult, u_test)])
