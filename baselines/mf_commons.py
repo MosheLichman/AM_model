@@ -46,12 +46,8 @@ def mp_user_test(queue, uids, args):
         uid = uids[i]
         u_test = test_data[np.where(test_data[:, 0] == uid)[0], 1].astype(int)
 
-        u_mf = np.dot(W[uid], H)
-        user_mult = u_mf        # Other places I'll have to normalize
-        if objective is 'logP':
-            if np.any(user_mult == 0):
-                log.info('mf_commons.mp_user_test: User %d with 0 probability' % uid)
-
+        user_mult = np.dot(W[uid], H)
+        if objective == 'logP':
             user_mult /= np.sum(user_mult)
 
         results.append([uid, objectives.obj_func[objective](user_mult, u_test)])
