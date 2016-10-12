@@ -61,7 +61,7 @@ def main_func():
     model = am_factory.get_model(args)
 
     params = fu.pkl_load(args.params)
-    results = evaluate_am(model, train_data, test_data, params, args.obj)
+    results = evaluate_am(args.obj, model, train_data, test_data, params)
 
     tm.print_summary()
     return results
