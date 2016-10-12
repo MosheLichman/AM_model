@@ -28,7 +28,7 @@ def fix_sim_mat(sim_mat, dim):
     norm = mat.sum(axis=1)
     mask = np.where(norm > 0)[0]
     tmp = mat.tolil()
-    tmp[mask, :] /= norm[tmp, :]
+    tmp[mask, :] /= norm[mask, :]
     return np.vstack(sparse.find(mat)).T
 
 
