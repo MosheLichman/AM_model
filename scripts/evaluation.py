@@ -69,6 +69,7 @@ def main_func():
     results = evaluate_am(args.obj, model, train_data, test_data, params)
 
     tm.print_summary()
+    print args.obj, np.mean(np.array(results)[:, 1])
     return results
 
 
@@ -110,4 +111,3 @@ def get_script_str(row='U', col='S', implicit_similarity=False, min_subscribers=
 
 if __name__ == '__main__':
     res = main_func()
-    print res
