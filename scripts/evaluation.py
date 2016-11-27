@@ -2,6 +2,7 @@
 Author: Moshe Lichman
 """
 import argparse
+import os
 import numpy as np
 from scipy import sparse
 
@@ -26,6 +27,7 @@ def main_func():
     parser.add_argument('-params', type=str, help='Path to learned params')
     parser.add_argument('-row_smooth', type=str, help='Path to row smoothing matrix.')
     parser.add_argument('-col_smooth', type=str, help='Path to column smoothing matrix.')
+    parser.add_argument('-output', type=str, help='Output folder of learning.')
 
     parser.add_argument('-num_proc', type=int, help='Num processors', default=2)
 
@@ -59,6 +61,9 @@ def main_func():
     test_data = np.repeat(test_mat_raw[:, :-1], test_mat_raw[:, -1].astype(int), axis=0)
 
     model = am_factory.get_model(args)
+
+    if args.params is None:
+        args.params = os.path.join(args.output, '%s_params.pkl' % args.model)
 
     params = fu.pkl_load(args.params)
     results = evaluate_am(args.obj, model, train_data, test_data, params)
