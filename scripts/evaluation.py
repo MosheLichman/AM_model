@@ -110,3 +110,4 @@ def get_script_str(row='U', col='S', implicit_similarity=False, min_subscribers=
 
 if __name__ == '__main__':
     res = main_func()
+    print res
