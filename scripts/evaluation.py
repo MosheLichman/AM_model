@@ -55,7 +55,7 @@ def main_func():
         logP_results = fu.pkl_load(logP_path)
         erank_results = fu.pkl_load(erank_path)
         print 'logP: %.4f' % np.mean(np.array(logP_results)[:, 1])
-        print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
+        print 'erank: %.4f' % np.mean(np.array(erank_results)[:, 1])
         return logP_results, erank_results
 
     R, C = args.r, args.c
@@ -81,7 +81,7 @@ def main_func():
     erank_results = evaluate_am('erank', model, train_data, test_data, params)
     print 'logP: %.4f' % np.mean(np.array(logP_results)[:, 1])
     fu.pkl_dump(args.output, logP_filename, logP_results)
-    print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
+    print 'erank: %.4f' % np.mean(np.array(erank_results)[:, 1])
     fu.pkl_dump(args.output, erank_filename, erank_results)
 
     tm.print_summary()
