@@ -66,11 +66,13 @@ def main_func():
         args.params = os.path.join(args.output, '%s_params.pkl' % args.model)
 
     params = fu.pkl_load(args.params)
-    results = evaluate_am(args.obj, model, train_data, test_data, params)
+    logP_results = evaluate_am('logP', model, train_data, test_data, params)
+    print 'logP: %.4f' % np.mean(np.array(logP_results)[:, 1])
+    erank_results = evaluate_am('erank', model, train_data, test_data, params)
+    print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
 
     tm.print_summary()
-    print args.obj, np.mean(np.array(results)[:, 1])
-    return results
+    return (logP_results, erank_results)
 
 
 def get_script_str(row='U', col='S', implicit_similarity=False, min_subscribers=1000, min_posts=1000,
