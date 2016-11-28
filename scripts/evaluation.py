@@ -52,7 +52,11 @@ def main_func():
     logP_path = os.path.join(args.output, logP_filename)
     erank_path = os.path.join(args.output, erank_filename)
     if os.path.exists(logP_path) and os.path.exists(erank_path):
-        return fu.pkl_load(logP_path), fu.pkl_load(erank_path)
+        logP_results = fu.pkl_load(logP_path)
+        erank_results = fu.pkl_load(erank_path)
+        print 'logP: %.4f' % np.mean(np.array(logP_results)[:, 1])
+        print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
+        return logP_results, erank_results
 
     R, C = args.r, args.c
     obs_mat_raw = fu.np_load(args.train)
@@ -74,9 +78,9 @@ def main_func():
     params = fu.pkl_load(args.params)
 
     logP_results = evaluate_am('logP', model, train_data, test_data, params)
+    erank_results = evaluate_am('erank', model, train_data, test_data, params)
     print 'logP: %.4f' % np.mean(np.array(logP_results)[:, 1])
     fu.pkl_dump(args.output, logP_filename, logP_results)
-    erank_results = evaluate_am('erank', model, train_data, test_data, params)
     print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
     fu.pkl_dump(args.output, erank_filename, erank_results)
 
@@ -123,5 +127,5 @@ def get_result_filename(model, obj):
     #     col_sim = '%s%s_similarity%s_data_%.3f_%s.npy' % (input_dir, col_sim_name, implicit_str, min_col_sim, name)
 
 
-    if __name__ == '__main__':
-        res = main_func()
+if __name__ == '__main__':
+    res = main_func()
