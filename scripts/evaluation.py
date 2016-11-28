@@ -19,6 +19,7 @@ def evaluate_am(objective, model, train_data, test_data, params):
 
 
 def main_func():
+    """Saves results. If results already exist in given name, loads and returns instead of calculating again."""
     parser = argparse.ArgumentParser()
     parser.add_argument('-train', type=str, help='Path to training matrix.')
     parser.add_argument('-val', type=str, help='Path to validation matrix.')
@@ -45,6 +46,12 @@ def main_func():
 
     tm.reset_tm()
 
+    args.params = os.path.join(args.output, '%s_params.pkl' % args.model)
+    logP_filename = get_result_filename(args.params, 'logP')
+    erank_filename = get_result_filename(args.params, 'erank')
+    if os.path.exists(logP_filename) and os.path.exists(erank_filename):
+        return fu.pkl_load(logP_filename), fu.pkl_load(erank_filename)
+
     R, C = args.r, args.c
     obs_mat_raw = fu.np_load(args.train)
 
@@ -62,53 +69,57 @@ def main_func():
 
     model = am_factory.get_model(args)
 
-    if args.params is None:
-        args.params = os.path.join(args.output, '%s_params.pkl' % args.model)
-
     params = fu.pkl_load(args.params)
+
     logP_results = evaluate_am('logP', model, train_data, test_data, params)
     print 'logP: %.4f' % np.mean(np.array(logP_results)[:, 1])
+    fu.pkl_dump(logP_filename, logP_results)
     erank_results = evaluate_am('erank', model, train_data, test_data, params)
     print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
+    fu.pkl_dump(erank_filename, erank_results
 
     tm.print_summary()
-    return (logP_results, erank_results)
+    return logP_results, erank_results
 
 
-def get_script_str(row='U', col='S', implicit_similarity=False, min_subscribers=1000, min_posts=1000,
-                   max_words=25000, sample=False, min_col_sim=0.6, min_row_sim=0.8, rows=113557, cols=21386):
-    input_dir = '/extra/dkotzias0/reddit_data/data/input/'
-    run_name = '_%d_%d_%d' % (min_subscribers, min_posts, max_words)
-    name = '%sx%s_' % (row, col)
+def get_result_filename(params, obj):
+    return params.replace('.pkl', '_results_%s.pkl' % obj)
 
-    train = '%s%sdata%s.npy' % (input_dir, name, run_name)
-    validation = '%s%sdata%s_validation.npy' % (input_dir, name, run_name)
-    test = '%s%sdata%s_test.npy' % (input_dir, name, run_name)
 
-    'category_similarity_data_0.600_1000_1000_25000.npy'
-    if row == 'U':
-        row_sim_name = 'user'
-    elif row == 'S':
-        row_sim_name = 'category'
-    else:
-        print 'Error i dont recognize row name %s' % row
-        return
-
-    if col == 'S':
-        col_sim_name = 'category'
-    elif col == 'W':
-        col_sim_name = 'word'
-    else:
-        print 'Error i dont recognize column name %s' % col
-        return
-
-    implicit_str = ''
-    if implicit_similarity:
-        implicit_str = '_implicit'
-
-    row_sim = '%s%s_similarity%s_data_%.3f_%s.npy' % (input_dir, row_sim_name, implicit_str, min_row_sim, name)
-
-    col_sim = '%s%s_similarity%s_data_%.3f_%s.npy' % (input_dir, col_sim_name, implicit_str, min_col_sim, name)
+# def get_script_str(row='U', col='S', implicit_similarity=False, min_subscribers=1000, min_posts=1000,
+#                    max_words=25000, sample=False, min_col_sim=0.6, min_row_sim=0.8, rows=113557, cols=21386):
+#     input_dir = '/extra/dkotzias0/reddit_data/data/input/'
+#     run_name = '_%d_%d_%d' % (min_subscribers, min_posts, max_words)
+#     name = '%sx%s_' % (row, col)
+#
+#     train = '%s%sdata%s.npy' % (input_dir, name, run_name)
+#     validation = '%s%sdata%s_validation.npy' % (input_dir, name, run_name)
+#     test = '%s%sdata%s_test.npy' % (input_dir, name, run_name)
+#
+#     'category_similarity_data_0.600_1000_1000_25000.npy'
+#     if row == 'U':
+#         row_sim_name = 'user'
+#     elif row == 'S':
+#         row_sim_name = 'category'
+#     else:
+#         print 'Error i dont recognize row name %s' % row
+#         return
+#
+#     if col == 'S':
+#         col_sim_name = 'category'
+#     elif col == 'W':
+#         col_sim_name = 'word'
+#     else:
+#         print 'Error i dont recognize column name %s' % col
+#         return
+#
+#     implicit_str = ''
+#     if implicit_similarity:
+#         implicit_str = '_implicit'
+#
+#     row_sim = '%s%s_similarity%s_data_%.3f_%s.npy' % (input_dir, row_sim_name, implicit_str, min_row_sim, name)
+#
+#     col_sim = '%s%s_similarity%s_data_%.3f_%s.npy' % (input_dir, col_sim_name, implicit_str, min_col_sim, name)
 
 
 if __name__ == '__main__':
