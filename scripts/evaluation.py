@@ -76,7 +76,7 @@ def main_func():
     fu.pkl_dump(logP_filename, logP_results)
     erank_results = evaluate_am('erank', model, train_data, test_data, params)
     print 'erank: %.4f %%' % 100 * np.mean(np.array(erank_results)[:, 1])
-    fu.pkl_dump(erank_filename, erank_results
+    fu.pkl_dump(erank_filename, erank_results)
 
     tm.print_summary()
     return logP_results, erank_results
