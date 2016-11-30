@@ -73,10 +73,10 @@ def get_detailed_log_results(args, model):
         logP_results = evaluate_am('logP', model, train_data, test_data, params, return_all=True)
         fu.pkl_dump(args.output, logP_filename, logP_results)
 
-    log2_array = np.zeros((0))
+    result_list = []
     for (id, results) in logP_results:
-        log2_array = np.vstack((log2_array, results))
-    return log2_array
+        result_list.extend(results)
+    return np.array(result_list)
 
 
 def main_func():
