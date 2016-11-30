@@ -24,7 +24,7 @@ def _global_ar_2(args):
 
 
 def _load_smooth_mat(path, dim):
-    raw = fu.pkl_load(path)
+    raw = fu.np_load(path)
     return sparse.coo_matrix((raw[:, 2], (raw[:, 0], raw[:, 1])), shape=(dim, dim))
 
 

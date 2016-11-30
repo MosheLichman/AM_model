@@ -19,7 +19,7 @@ class AMAbstract(object):
         self._U, self._I, self._num_comp, self._num_proc = U, I, num_comp, num_proc
         self._user_smooth, self._item_smooth = user_smooth, item_smooth
 
-        log.info('Initializing modal parameters')
+        log.info('Initializing model parameters')
 
         self._prev_mix_counts = np.zeros([U, num_comp])
         self._curr_mix_counts = np.zeros([U, num_comp])

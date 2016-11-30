@@ -43,7 +43,7 @@ def main_func():
 
     parser.add_argument('-output', type=str, help='Output folder.')
 
-    parser.add_argument('-num_proc', type=int, help='Num processors', default=2)
+    parser.add_argument('-num_proc', type=int, help='Num processors', default=16)
 
     parser.add_argument('-model', type=str, help='Which models')
 
@@ -59,13 +59,13 @@ def main_func():
     tm.reset_tm()
 
     R, C = args.r, args.c
-    obs_mat_raw = fu.pkl_load(args.train)
+    obs_mat_raw = fu.np_load(args.train)
     train_data = sparse.coo_matrix((obs_mat_raw[:, 2], (obs_mat_raw[:, 0], obs_mat_raw[:, 1])),
                                 shape=(R, C)).tolil()
 
     # Converting the validation data to [row_id, col_id] X number of obs. It's not as efficient but it's
     # much easier to work with that data.
-    val_mat_raw = fu.pkl_load(args.val)
+    val_mat_raw = fu.np_load(args.val)
     val_data = np.repeat(val_mat_raw[:, :-1], val_mat_raw[:, -1].astype(int), axis=0)
 
     model = am_factory.get_model(args)
