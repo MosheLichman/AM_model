@@ -40,7 +40,7 @@ def compare_2_4_logP():
 
     log2 = get_detailed_log_results(args, 'gar2')
     log4 = get_detailed_log_results(args, 'gar4')
-    name = os.path.join(args.output, 'gar2_gar4.pdf')
+    name = os.path.join(args.output, 'gar2_gar4.jpg')
     scatter_plot(log2, log4, name)
 
 
