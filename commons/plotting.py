@@ -5,7 +5,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
-def scatter_plot(x, y):
+def scatter_plot(x, y, name):
     f, ax = plt.subplots(figsize=(6, 6))
 
     ax.scatter(x, y, c=".3")
@@ -28,4 +28,4 @@ def scatter_plot(x, y):
     # # xlim or ylim is changed.
     # ax.callbacks.connect('xlim_changed', on_change)
     # ax.callbacks.connect('ylim_changed', on_change)
-    plt.savefig(os.path.join(args.output, 'log_scatter.pdf'))
+    plt.savefig(name)
