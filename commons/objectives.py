@@ -10,7 +10,7 @@ from __future__ import division
 import numpy as np
 
 
-def _obj_logP(user_mult, u_test):
+def _obj_logP(user_mult, u_test, return_all=False):
     """
     Returns the avg. logP of the u_test data.
 
@@ -23,6 +23,8 @@ def _obj_logP(user_mult, u_test):
     --------
         1. avg_logP:    <float>     avg. logP of the test points
     """
+    if return_all:
+        return np.log(user_mult[u_test.astype(int)])
     return np.mean(np.log(user_mult[u_test.astype(int)]))
 
 

@@ -14,7 +14,6 @@ from commons import time_measure as tm
 
 
 class AMAbstract(object):
-
     def __init__(self, U, I, num_comp=4, num_proc=1, user_smooth=None, item_smooth=None):
         self._U, self._I, self._num_comp, self._num_proc = U, I, num_comp, num_proc
         self._user_smooth, self._item_smooth = user_smooth, item_smooth
@@ -63,7 +62,7 @@ class AMAbstract(object):
 
         return self._model_params
 
-    def evaluation(self, train_data, test_data, params=None, objective='logP'):
+    def evaluation(self, train_data, test_data, params=None, objective='logP', return_all=False):
         if params is None:
             params = self._model_params
 
@@ -74,8 +73,8 @@ class AMAbstract(object):
         batch_size = int(np.ceil(uids.shape[0] / self._num_proc))
 
         helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
-                            (objective, g_mpe, mle, f_mle, l_mle, test_data, params['lambda'], params['eta'],
-                             params['sum_b']), results.extend)
+                              (objective, g_mpe, mle, f_mle, l_mle, test_data, params['lambda'], params['eta'],
+                               params['sum_b'], return_all), results.extend)
 
         return results
 
@@ -94,13 +93,13 @@ class AMAbstract(object):
         batch_size = int(np.ceil(uids.shape[0] / self._num_proc))
 
         helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
-                            ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb, self._model_params['eta'],
-                             self._model_params['sum_b']), f_sum_b.extend)
+                              ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb, self._model_params['eta'],
+                               self._model_params['sum_b']), f_sum_b.extend)
 
         f_sum_b_eps = []
         helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
-                            ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb, self._model_params['eta'],
-                             self._model_params['sum_b'] * np.exp(self._eps)), f_sum_b_eps.extend)
+                              ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb, self._model_params['eta'],
+                               self._model_params['sum_b'] * np.exp(self._eps)), f_sum_b_eps.extend)
 
         f_sum_b = np.array(f_sum_b)
         f_sum_b = np.mean(f_sum_b[:, 1])
@@ -114,14 +113,14 @@ class AMAbstract(object):
         # Gradiant ascent step on sum_mg
         f_eta = []
         helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
-                            ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb, self._model_params['eta'],
-                             self._model_params['sum_b']), f_eta.extend)
+                              ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb, self._model_params['eta'],
+                               self._model_params['sum_b']), f_eta.extend)
 
         f_eta_eps = []
         helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
-                            ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb,
-                             self._model_params['eta'] * np.exp(self._eps), self._model_params['sum_b']),
-                            f_eta_eps.extend)
+                              ('logP', g_mpe, mle, f_mle, l_mle, val_data, lamb,
+                               self._model_params['eta'] * np.exp(self._eps), self._model_params['sum_b']),
+                              f_eta_eps.extend)
 
         f_eta = np.array(f_eta)
         f_eta = np.mean(f_eta[:, 1])
@@ -227,11 +226,14 @@ class AMAbstract(object):
            1. results:      <list>      each row is [user_id, avg score]
         """
         use_mix = False
+        return_all = False
 
         if len(args) == 9:
             objective, g_MPE, MLE, f_MLE, l_MLE, test_data, lamb, eta, sum_b = args
         if len(args) == 10:
-            objective, g_MPE, MLE, f_MLE, l_MLE, test_data, lamb, eta, sum_b, use_mix = args
+            objective, g_MPE, MLE, f_MLE, l_MLE, test_data, lamb, eta, sum_b, return_all = args
+        if len(args) == 11:
+            objective, g_MPE, MLE, f_MLE, l_MLE, test_data, lamb, eta, sum_b, use_mix, return_all = args
         try:
             results = []
 
@@ -270,7 +272,7 @@ class AMAbstract(object):
                     f_probs = c_prob[3] * np.array(uf_mle[0, :].toarray())[0]
                     user_mult = MLE_probs + g_probs + l_probs + f_probs
 
-                results.append([uid, objectives.obj_func[objective](user_mult, u_test)])
+                results.append([uid, objectives.obj_func[objective](user_mult, u_test, return_all)])
                 user_eval_point.collect()
 
             queue.put(results)
