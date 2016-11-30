@@ -157,6 +157,20 @@ class AMAbstract(object):
             learn_point.collect()
             return g_mpe, mle, None, None
 
+        lmle_point = tm.get_point('learn_lmle')
+        tmp = lil_matrix(train_data[relevant_uids].tocsr().dot(self._item_smooth))
+        nnz = np.where(tmp.sum(axis=1) > 0)[0]
+        tmp[nnz] /= tmp[nnz].sum(axis=1)
+
+        l_mle = lil_matrix((self._U, self._I))
+        l_mle[relevant_uids] = tmp
+        l_mle = l_mle.tocsr()
+        lmle_point.collect()
+
+        if self._num_comp == 3:
+            learn_point.collect()
+            return g_mpe, mle, None, l_mle
+
         fmle_point = tm.get_point('learm_fmle')
 
         tmp = lil_matrix(self._user_smooth[relevant_uids].dot(train_data.tocsc()))
@@ -167,16 +181,6 @@ class AMAbstract(object):
         f_mle[relevant_uids] = tmp
         f_mle = f_mle.tocsr()
         fmle_point.collect()
-
-        lmle_point = tm.get_point('learn_lmle')
-        tmp = lil_matrix(train_data[relevant_uids].tocsr().dot(self._item_smooth))
-        nnz = np.where(tmp.sum(axis=1) > 0)[0]
-        tmp[nnz] /= tmp[nnz].sum(axis=1)
-
-        l_mle = lil_matrix((self._U, self._I))
-        l_mle[relevant_uids] = tmp
-        l_mle = l_mle.tocsr()
-        lmle_point.collect()
 
         learn_point.collect()
 
@@ -255,6 +259,10 @@ class AMAbstract(object):
 
                 if self._num_comp == 2:
                     user_mult = MLE_probs + g_probs
+                elif self._num_comp == 3:
+                    ul_mle = l_MLE[uid, :]
+                    l_probs = c_prob[2] * np.array(ul_mle[0, :].toarray())[0]
+                    user_mult = MLE_probs + g_probs + l_probs
                 else:
                     ul_mle = l_MLE[uid, :]
                     uf_mle = f_MLE[uid, :]

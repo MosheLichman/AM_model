@@ -29,6 +29,9 @@ class AMGlobal(am_abstract.AMAbstract):
 
             if self._num_comp == 2:
                 probs = [MLE_probs, g_probs]
+            elif self._num_comp == 3:
+                l_probs = c_prob[2] * np.array(l_mle[val_data[:, 0].astype(int), val_data[:, 1].astype(int)])[0]
+                probs = [MLE_probs, g_probs, l_probs]
             else:
                 l_probs = c_prob[2] * np.array(l_mle[val_data[:, 0].astype(int), val_data[:, 1].astype(int)])[0]
                 f_probs = c_prob[3] * np.array(f_mle[val_data[:, 0].astype(int), val_data[:, 1].astype(int)])[0]
