@@ -88,6 +88,9 @@ def main_func():
     return logP_results, erank_results
 
 
+def get_result_filename(model, obj):
+    return '%s_results_%s.pkl' % (model, obj)
+
 
 if __name__ == '__main__':
     res = main_func()
