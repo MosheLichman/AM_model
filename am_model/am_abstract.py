@@ -74,7 +74,7 @@ class AMAbstract(object):
 
         helpers.quque_on_uids(self._num_proc, uids, batch_size, self._mp_user_test,
                               (objective, g_mpe, mle, f_mle, l_mle, test_data, params['lambda'], params['eta'],
-                               params['sum_b'], return_all), results.extend)
+                               params['sum_b'], True, return_all), results.extend)
 
         return results
 
