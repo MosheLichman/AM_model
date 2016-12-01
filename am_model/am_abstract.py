@@ -65,7 +65,9 @@ class AMAbstract(object):
     def evaluation(self, train_data, test_data, params=None, objective='logP', return_all=False):
         if params is None:
             params = self._model_params
-
+        else:
+            self._model_params = params
+            
         g_mpe, mle, f_mle, l_mle = self._learn_components(train_data, np.unique(test_data[:, 0]))
         results = []
 
@@ -255,6 +257,7 @@ class AMAbstract(object):
                     c_prob = (m_counts + prior) / np.sum(m_counts + prior)
                 else:
                     c_prob = self._get_mix_probs_for_user(uid)
+                    print c_prob
 
                 MLE_probs = c_prob[0] * np.array(u_mle[0, :].toarray())[0]
                 g_probs = c_prob[1] * g_MPE
