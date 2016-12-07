@@ -49,12 +49,12 @@ class AMAbstract(object):
         log.info('Running EM to optimize mixture weights.')
         g_mpe, mle, f_mle, l_mle = self._learn_components(train_data, np.unique(val_data[:, 0]))
 
-        lamb = self._learn_lambda()
+        self._model_params['lambda'] = lamb = self._learn_lambda()
 
         self._em_opt(val_data, mle, g_mpe, l_mle, f_mle, lamb)
 
-        for i in range(5):
-            self._opt_hyper_params(f_mle, g_mpe, l_mle, lamb, mle, val_data)
+        # for i in range(5):
+        #     self._opt_hyper_params(f_mle, g_mpe, l_mle, lamb, mle, val_data)
 
         self._update_mix_weights(self._curr_mix_counts)
 
