@@ -25,6 +25,8 @@ def _global_ar_2(args):
 
 def _load_smooth_mat(path, dim):
     raw = fu.load(path)
+    if type(raw) is sparse.csr.csr_matrix:
+        return raw
     return sparse.coo_matrix((raw[:, 2], (raw[:, 0], raw[:, 1])), shape=(dim, dim))
 
 
