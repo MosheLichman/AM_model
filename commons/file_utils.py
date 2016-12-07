@@ -14,6 +14,14 @@ from os.path import join
 from commons import log_utils as log
 
 
+def load(file_path):
+    if file_path.endswith('.pkl'):
+        return pkl_load(file_path)
+    if file_path.endswith('.npy'):
+        return np_load(file_path)
+    print 'Dont know how to open %s' % file_path
+
+
 def pkl_load(file_path):
     """
     Wrapper for pickle load that prints time as well.
@@ -161,4 +169,3 @@ def np_save(path, file_name, data):
     np.save(join(path, file_name), data)
     os.chmod(join(path, file_name), 0770)
     log.info('Saving took %d seconds' % (time.time() - start))
-
